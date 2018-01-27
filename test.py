@@ -4,7 +4,7 @@ import csv
 
 
 def data_read(filename):
-    
+    pass
 
 
 def hypothesis(w, phi):
@@ -44,3 +44,4 @@ def learn(m):
 
 
 if __name__ == "__main__":
+    print()
