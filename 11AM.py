@@ -2,7 +2,10 @@ import numpy as np
 import os
 import csv
 import matplotlib.pyplot as plt
+from scipy.interpolate import spline
+DATE = 0
 ITEM_NUMBER = 3
+PRICE = 4
 QUANTITY = 5
 ON_PROMO = 6
 PROMO = 6
@@ -33,6 +36,11 @@ def read_all_files():
                     data = np.concatenate((data, temp), axis=0)
 
     return data
+    for [row] in datareader:
+        temp = row.split(',')
+        data.append(temp[:ON_PROMO] + temp[ON_PROMO + 1:])
+    data = np.array(data[1:])
+    return data.astype(np.float)
 
 
 def hypothesis(w, phi):
@@ -109,6 +117,87 @@ def learn(pol_deg):
 
 
 
+def plot_var_against_sold(items, data, xvar, xlabel, scatter = True):
+    new = plt.figure()
+    for item in items:
+        x = {}
+        num = {}
+        for entry in data:
+            if entry[ITEM_NUMBER] == item:
+                if entry[xvar] not in x:
+                    x[entry[xvar]] = entry[QUANTITY]
+                    num[entry[xvar]] = 1
+                else:
+                    x[entry[xvar]] += entry[QUANTITY]
+                    num[entry[xvar]] += 1
+        for v in x:
+            x[v] /= num[v]
+
+        if scatter:
+            plt.scatter(x.keys(), x.values())
+        else:
+            plt.plot(x.keys(), x.values())
+    plt.xlabel(xlabel)
+    plt.ylabel("AVERAGE # ITEMS SOLD")
+    new.show()
+
+
+def plot_var_against_promo(items, data, xvar, xlabel, scatter = True):
+    new = plt.figure()
+    for item in items:
+        x = []
+        y = []
+        for entry in data:
+            if entry[ITEM_NUMBER] == item:
+                x += [entry[xvar]]
+                y += [entry[PROMO]]
+
+        if scatter:
+            plt.scatter(x, y)
+        else:
+            plt.plot(x, x)
+
+    plt.xlabel(xlabel)
+    plt.ylabel("PROMO TYPES")
+    new.show()
+
+
+def plot_promo_price(items, data):
+    new = plt.figure()
+    for item in items:
+        x = {}
+        num = {}
+        for entry in data:
+            if entry[ITEM_NUMBER] == item:
+                if entry[PROMO] not in x:
+                    x[entry[PROMO]] = entry[PRICE]
+                    num[entry[PROMO]] = 1
+                else:
+                    x[entry[PROMO]] += entry[PRICE]
+                    num[entry[PROMO]] += 1
+        for v in x:
+            x[v] /= num[v]
+
+        plt.scatter(x.keys(), x.values())
+    plt.xlabel("PROMO")
+    plt.ylabel("AVERAGE PRICE")
+    new.show()
+
 if __name__ == "__main__":
-    #x, y = read_all_files()
     learn(1)
+
+data_2009 = data_read('hackathon_dataset_2009.csv')
+data_2010 = data_read('hackathon_dataset_2010.csv')
+data_2011 = data_read('hackathon_dataset_2011.csv')
+data = np.concatenate((data_2009, data_2010, data_2011))
+print(len(np.unique(data_2009[:,DATE])))
+print(len(np.unique(data)))
+print(len(np.unique(data_2009[:,PRICE])))
+print(len(np.unique(data_2010[:,PRICE])))
+print(len(np.unique(data_2011[:,PRICE])))
+# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PROMO, "Promo")
+# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+# plot_var_against_promo([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PRICE, "Price")
+plot_promo_price([8598, 22631, 102257, 263929, 423218], data_2009)
+plt.show()
