@@ -36,11 +36,7 @@ def read_all_files():
                     data = np.concatenate((data, temp), axis=0)
 
     return data
-    for [row] in datareader:
-        temp = row.split(',')
-        data.append(temp[:ON_PROMO] + temp[ON_PROMO + 1:])
-    data = np.array(data[1:])
-    return data.astype(np.float)
+
 
 
 def hypothesis(w, phi):
