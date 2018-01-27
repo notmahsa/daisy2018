@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import spline
 DATE = 0
 ITEM_NUMBER = 3
+PRICE = 4
 QUANTITY = 5
 ON_PROMO = 6
 PROMO = 6
@@ -53,27 +54,6 @@ def learn(m):
             data_read(file)
 
 
-def plot_promo_sold(items, data):
-
-    for item in items:
-        x = {}
-        num = {}
-        for entry in data:
-            if entry[ITEM_NUMBER] == item:
-                if entry[PROMO] not in x:
-                    x[entry[PROMO]] = entry[QUANTITY]
-                    num[entry[PROMO]] = 1
-                else:
-                    x[entry[PROMO]] += entry[QUANTITY]
-                    num[entry[PROMO]] += 1
-        for promo in x:
-            x[promo] /= num[promo]
-        import matplotlib
-        matplotlib.pyplot.scatter(x.keys(), x.values())
-    plt.xlabel("PROMO TYPE")
-    plt.ylabel("AVERAGE # ITEMS SOLD")
-    plt.show()
-
 def plot_var_against_sold(items, data, xvar, xlabel, scatter = True):
     new = plt.figure()
     for item in items:
@@ -98,6 +78,7 @@ def plot_var_against_sold(items, data, xvar, xlabel, scatter = True):
     plt.ylabel("AVERAGE # ITEMS SOLD")
     new.show()
 
+
 def plot_var_against_promo(items, data, xvar, xlabel, scatter = True):
     new = plt.figure()
     for item in items:
@@ -117,11 +98,42 @@ def plot_var_against_promo(items, data, xvar, xlabel, scatter = True):
     plt.ylabel("PROMO TYPES")
     new.show()
 
+
+def plot_promo_price(items, data):
+    new = plt.figure()
+    for item in items:
+        x = {}
+        num = {}
+        for entry in data:
+            if entry[ITEM_NUMBER] == item:
+                if entry[PROMO] not in x:
+                    x[entry[PROMO]] = entry[PRICE]
+                    num[entry[PROMO]] = 1
+                else:
+                    x[entry[PROMO]] += entry[PRICE]
+                    num[entry[PROMO]] += 1
+        for v in x:
+            x[v] /= num[v]
+
+        plt.scatter(x.keys(), x.values())
+    plt.xlabel("PROMO")
+    plt.ylabel("AVERAGE PRICE")
+    new.show()
+
 if __name__ == "__main__":
     pass
 data_2009 = data_read('hackathon_dataset_2009.csv')
-print len(np.unique(data_2009[:,0]))
-plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PROMO, "Promo")
-plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
-plot_var_against_promo([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+data_2010 = data_read('hackathon_dataset_2010.csv')
+data_2011 = data_read('hackathon_dataset_2011.csv')
+data = np.concatenate((data_2009, data_2010, data_2011))
+print len(np.unique(data_2009[:,DATE]))
+print len(np.unique(data))
+print len(np.unique(data_2009[:,PRICE]))
+print len(np.unique(data_2010[:,PRICE]))
+print len(np.unique(data_2011[:,PRICE]))
+# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PROMO, "Promo")
+# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+# plot_var_against_promo([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PRICE, "Price")
+plot_promo_price([8598, 22631, 102257, 263929, 423218], data_2009)
 plt.show()
