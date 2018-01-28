@@ -23,6 +23,39 @@ def data_read(file_name):
     return data.astype(np.float)
 
 
+def data_result_read(file_name):
+    datafile = open(file_name, 'r')
+    datareader = csv.reader(datafile, delimiter=';')
+    data = []
+    for [row] in datareader:
+        temp = row.split(',')
+        data.append(temp[:5] + temp[6:ON_PROMO] + temp[ON_PROMO + 1:])
+    data = np.array(data[1:])
+    return data.astype(np.float)
+
+
+def complete_file(pred, id):
+    datafile = open('hackathon_result.csv', 'r')
+    datareader = csv.reader(datafile, delimiter=';')
+    data = []
+    row_num = -1
+    for [row] in datareader:
+        temp = row.split(',')
+        if row_num == -1:
+            data.append(temp)
+            row_num += 1
+        elif row[ITEM_NUMBER] == str(id) and row_num > 0:
+            data.append(
+                temp[:5] + [pred[row_num]] + temp[6:ON_PROMO] + [
+                    ((temp[ON_PROMO] != 'N') and 'Y') or 'N'] + temp[ON_PROMO + 1:])
+            row_num += 1
+
+
+    with open("hackathon_result.csv", "wb") as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+
 def read_all_files():
     file_num = 1
     data = None
@@ -181,11 +214,10 @@ def plot_promo_price(items, data):
     plt.ylabel("AVERAGE PRICE")
     new.show()
 
-def split_on_item(data):
+def split_on_item(data, list_of_items):
     out = []
     i = 0
-    print len(data), data[0]
-    list_of_items = np.unique(data[:,ITEM_NUMBER])
+    # list_of_items = np.unique(data[:,ITEM_NUMBER])
     for id in list_of_items:
         for item in data:
             if item[ITEM_NUMBER] == id:
@@ -211,6 +243,12 @@ data_2009 = data_read('hackathon_dataset_2009.csv')
 data_2010 = data_read('hackathon_dataset_2010.csv')
 data_2011 = data_read('hackathon_dataset_2011.csv')
 data = np.concatenate((data_2009, data_2010, data_2011))
+data_result = data_result_read('hackathon_result.csv')
+
+result_items = np.unique((data_result[:,ITEM_NUMBER]))
+print split_on_item(data, result_items)
+quit()
+
 print(len(np.unique(data_2009[:,DATE])))
 print(len(np.unique(data)))
 print(len(np.unique(data_2009[:,PRICE])))
