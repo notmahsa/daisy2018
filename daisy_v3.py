@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import matplotlib.pylab as plt
+import math
 
 DATE = 0
 ITEM_NUMBER = 3
@@ -8,6 +9,8 @@ PRICE = 4
 QUANTITY = 5
 ON_PROMO = 6
 PROMO = 6
+DAY_ONE = 20090101
+
 
 def data_read(file_name):
     datafile = open(file_name, 'r')
@@ -23,11 +26,22 @@ def data_read(file_name):
 def split_on_item(data):
     out = []
     i = 0
-    for item in data:
-        if item[ITEM_NUMBER] == 456076:
-            i += 1
-            out += [np.delete(item, ITEM_NUMBER)]
-    return np.array(out)
+    list_of_items = np.unique(data[:,ITEM_NUMBER])
+    for id in list_of_items:
+        for item in data:
+            if item[ITEM_NUMBER] == id:
+                i += 1
+                row = [
+                    math.sqrt(item[0] - DAY_ONE) / 4,
+                    item[1] / 70,
+                    item[2],
+                    item[4] / 10,
+                    item[5],
+                    item[6]
+                ]
+                out += [row]
+        # CALL FARHANG'S FUNCTION
+        return np.array(out)
 
 
 def predict(x, w):
@@ -49,14 +63,25 @@ def prediction_error(h, y):
     return np.sum(diff ** 2) / (2*m)
 
 
+def augment(x, m):
+    one = np.ones((len(x), 1))
+    phi = np.concatenate((one, x), axis=1)
+
+    for i in range(1, m):
+        temp = x ** (i+1)
+        phi = np.concatenate((phi, temp), axis=1)
+
+    return phi
+
+
 def SGD(x, y):
     # assigning model constants
     learning_rate = 0.001
-    lam = 10
+    lam = 0.1
     m = x.shape[0]
     n = x.shape[1]
     B = int(m/100)
-    num_epoch = 10
+    num_epoch = 30
     num_iter = int(num_epoch * (m / B))
     w = np.zeros(n).reshape(n, 1)
 
@@ -84,9 +109,7 @@ def SGD(x, y):
         # updating weights
         w = w - (learning_rate/B) * grad + (lam/B) * w
 
-
     return w, costs
-
 
 
 if __name__ == "__main__":
@@ -98,7 +121,7 @@ if __name__ == "__main__":
     data_columns = np.delete(data_columns, label_column, axis=0)
     x = data[:, data_columns]
     y = data[:, label_column].reshape(-1, 1)
-    print(y[0])
+    x = augment(x, 1)
 
     print(x.shape)
     print(y.shape)
@@ -106,6 +129,8 @@ if __name__ == "__main__":
     w, err = SGD(x, y)
 
     epoch = np.arange(len(err))
+    print(len(epoch))
+    print(len(err))
     plt.plot(epoch, err)
     plt.xlabel('epoch')
     plt.ylabel('prediciton error')

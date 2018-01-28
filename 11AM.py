@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import csv
+import math
 import matplotlib.pyplot as plt
 from scipy.interpolate import spline
 DATE = 0
@@ -9,6 +10,7 @@ PRICE = 4
 QUANTITY = 5
 ON_PROMO = 6
 PROMO = 6
+DAY_ONE = 20090101
 
 def data_read(file_name):
     datafile = open(file_name, 'r')
@@ -36,6 +38,7 @@ def read_all_files():
                     data = np.concatenate((data, temp), axis=0)
 
     return data
+
 
 
 def hypothesis(w, phi):
@@ -110,6 +113,8 @@ def learn(pol_deg):
     return w
 
 
+
+
 def plot_var_against_sold(items, data, xvar, xlabel, scatter = True):
     new = plt.figure()
     for item in items:
@@ -176,17 +181,26 @@ def plot_promo_price(items, data):
     plt.ylabel("AVERAGE PRICE")
     new.show()
 
-
 def split_on_item(data):
     out = []
     i = 0
-    print(len(data), data[0]
-    for item in data:
-        if item[ITEM_NUMBER] == 456076:
-            print i
-            i += 1
-            out += [np.delete(item, ITEM_NUMBER)]
-    return out
+    print len(data), data[0]
+    list_of_items = np.unique(data[:,ITEM_NUMBER])
+    for id in list_of_items:
+        for item in data:
+            if item[ITEM_NUMBER] == id:
+                i += 1
+                row = [
+                    math.sqrt(item[0] - DAY_ONE) / 4,
+                    item[1] / 70,
+                    item[2],
+                    item[4] / 10,
+                    math.sqrt(math.sqrt(item[5])),
+                    item[6]
+                ]
+                out += [row]
+        # CALL FARHANG'S FUNCTION
+        return np.array(out)
 
 
 if __name__ == "__main__":
