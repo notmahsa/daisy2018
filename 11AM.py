@@ -246,17 +246,18 @@ data = np.concatenate((data_2009, data_2010, data_2011))
 data_result = data_result_read('hackathon_result.csv')
 
 result_items = np.unique((data_result[:,ITEM_NUMBER]))
-print split_on_item(data, result_items)
-quit()
+# print split_on_item(data, result_items)
 
+'''
 print(len(np.unique(data_2009[:,DATE])))
 print(len(np.unique(data)))
 print(len(np.unique(data_2009[:,PRICE])))
 print(len(np.unique(data_2010[:,PRICE])))
 print(len(np.unique(data_2011[:,PRICE])))
-# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PROMO, "Promo")
-# plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
-# plot_var_against_promo([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+'''
+plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PROMO, "Promo")
+plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
+plot_var_against_promo([8598, 22631, 102257, 263929, 423218], data_2009, DATE, "Date")
 plot_var_against_sold([8598, 22631, 102257, 263929, 423218], data_2009, PRICE, "Price")
 plot_promo_price([8598, 22631, 102257, 263929, 423218], data_2009)
 plt.show()
