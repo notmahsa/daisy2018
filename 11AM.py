@@ -38,7 +38,6 @@ def read_all_files():
     return data
 
 
-
 def hypothesis(w, phi):
     h = np.matmul(w.transpose(), phi.transpose())
     return h.transpose()
@@ -111,8 +110,6 @@ def learn(pol_deg):
     return w
 
 
-
-
 def plot_var_against_sold(items, data, xvar, xlabel, scatter = True):
     new = plt.figure()
     for item in items:
@@ -179,16 +176,18 @@ def plot_promo_price(items, data):
     plt.ylabel("AVERAGE PRICE")
     new.show()
 
+
 def split_on_item(data):
     out = []
     i = 0
-    print len(data), data[0]
+    print(len(data), data[0]
     for item in data:
         if item[ITEM_NUMBER] == 456076:
             print i
             i += 1
             out += [np.delete(item, ITEM_NUMBER)]
     return out
+
 
 if __name__ == "__main__":
     # learn(1)
